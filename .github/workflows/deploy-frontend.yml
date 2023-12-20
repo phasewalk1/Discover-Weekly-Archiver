@@ -38,4 +38,4 @@ jobs:
         with:
           branch: gh-pages
           folder: client/build
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.SPOTSAVER_FE_PAT }}
