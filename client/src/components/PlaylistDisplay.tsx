@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-interface Song {
+export interface Song {
   title: string;
   artist: string;
   album_artwork: string;

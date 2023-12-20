@@ -1,7 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { FaSpotify } from "react-icons/fa";
-import PlaylistDisplay from "./components/PlaylistDisplay";
+import LandingPage from "./components/LandingPage";
+import ConnectingScreen from "./components/ConnectingScreen";
+import PostConnectionScreen from "./components/PostConnectionScreen";
+import PlaylistSavedScreen from "./components/PlaylistSavedScreen";
 import "./App.css";
 
 function App() {
@@ -23,50 +25,14 @@ function App() {
     }
   }, []);
 
-  const renderLandingPage = () => (
-    <div className="landing-page">
-      <div className="hero-section">
-        <h1 className="app-title">Spotsaver</h1>
-        <p className="tagline">
-          Don't let your Discover Weekly gems disappear!
-        </p>
-        <button onClick={handleAuthRedirect} className="spotify-button">
-          <FaSpotify /> Connect to Spotify
-        </button>
-      </div>
-      <div className="feature-section">
-        <div className="feature-item">
-          {/* Insert icons or images for each feature */}
-          <h3>Save Forever</h3>
-          <p>Automatically archive your Discover Weekly playlists.</p>
-        </div>
-        <div className="feature-item">
-          <h3>Instant Previews</h3>
-          <p>
-            Jump right into your newly saved tracks with an integrated playlist
-            viewer.
-          </p>
-        </div>
-        {/* Add more features as needed */}
-      </div>
-    </div>
-  );
-
   const handleAuthRedirect = () => {
     setIsConnecting(true);
     const authEndpoint = "http://localhost:8080/";
     window.location.href = authEndpoint;
   };
 
-  const renderConnectingScreen = () => (
-    <div className="connecting-screen">
-      <h2>Connecting to Spotify...</h2>
-      <div className="spinner"></div>
-    </div>
-  );
-
   const savePlaylist = () => {
-    if (spotifyToken) {
+    if (spotifyToken && !playlistSaved) {
       setIsLoading(true);
       axios
         .post(
@@ -96,23 +62,21 @@ function App() {
   return (
     <div className="App">
       <div className="centered-container">
-        {!isAuthorized ? (
-          renderLandingPage()
+        {!isAuthorized && !isConnecting ? (
+          <LandingPage onConnect={handleAuthRedirect} />
         ) : isConnecting ? (
-          renderConnectingScreen()
+          <ConnectingScreen />
+        ) : isLoading ? (
+          <p>Loading...</p>
         ) : playlistSaved ? (
-          <p>Your Discover Weekly playlist has been saved!</p>
+          <PlaylistSavedScreen songs={addedSongs} />
         ) : (
-          <>
-            <button onClick={savePlaylist} className="spotify-button">
-              Save Discover Weekly
-            </button>
-          </>
+          <PostConnectionScreen
+            onSave={savePlaylist}
+            playlistSaved={playlistSaved}
+          />
         )}
         {errorMessage && <p className="error-message">{errorMessage}</p>}
-        {playlistSaved && spotifyToken ? (
-          <PlaylistDisplay songs={addedSongs} />
-        ) : null}
       </div>
     </div>
   );
