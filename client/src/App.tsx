@@ -1,11 +1,13 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import "./App.css";
+import { FaSpotify } from "react-icons/fa";
 import PlaylistDisplay from "./components/PlaylistDisplay";
+import "./App.css";
 
 function App() {
   const [spotifyToken, setSpotifyToken] = useState<string | null>(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [playlistSaved, setPlaylistSaved] = useState(false);
   const [addedSongs, setAddedSongs] = useState([]);
@@ -21,10 +23,47 @@ function App() {
     }
   }, []);
 
+  const renderLandingPage = () => (
+    <div className="landing-page">
+      <div className="hero-section">
+        <h1 className="app-title">Spotsaver</h1>
+        <p className="tagline">
+          Don't let your Discover Weekly gems disappear!
+        </p>
+        <button onClick={handleAuthRedirect} className="spotify-button">
+          <FaSpotify /> Connect to Spotify
+        </button>
+      </div>
+      <div className="feature-section">
+        <div className="feature-item">
+          {/* Insert icons or images for each feature */}
+          <h3>Save Forever</h3>
+          <p>Automatically archive your Discover Weekly playlists.</p>
+        </div>
+        <div className="feature-item">
+          <h3>Instant Previews</h3>
+          <p>
+            Jump right into your newly saved tracks with an integrated playlist
+            viewer.
+          </p>
+        </div>
+        {/* Add more features as needed */}
+      </div>
+    </div>
+  );
+
   const handleAuthRedirect = () => {
+    setIsConnecting(true);
     const authEndpoint = "http://localhost:8080/";
     window.location.href = authEndpoint;
   };
+
+  const renderConnectingScreen = () => (
+    <div className="connecting-screen">
+      <h2>Connecting to Spotify...</h2>
+      <div className="spinner"></div>
+    </div>
+  );
 
   const savePlaylist = () => {
     if (spotifyToken) {
@@ -57,13 +96,10 @@ function App() {
   return (
     <div className="App">
       <div className="centered-container">
-        <h1>capsule.music</h1>
         {!isAuthorized ? (
-          <button onClick={handleAuthRedirect} className="spotify-button">
-            Connect to Spotify
-          </button>
-        ) : isLoading ? (
-          <p>Loading...</p>
+          renderLandingPage()
+        ) : isConnecting ? (
+          renderConnectingScreen()
         ) : playlistSaved ? (
           <p>Your Discover Weekly playlist has been saved!</p>
         ) : (

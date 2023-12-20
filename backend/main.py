@@ -7,30 +7,39 @@ from flask import Flask, request, url_for, session, redirect, jsonify
 from flask_cors import CORS
 
 
+# initialize Flask app
 app = Flask(__name__)
 app.config["SESSION_COOKIE_NAME"] = "spotify-login-session"
 app.secret_key = secrets.token_urlsafe(16)
+# enable CORS
 CORS(app)
 
 
+# login route: redirects to Spotify login page
 @app.route("/")
 def login():
+    # get the auth url from Spotify
     auth_url = create_spotify_oauth().get_authorize_url()
+    # redirect to auth url
     return redirect(auth_url)
 
 
+# callback route: redirects to frontend with access token
 @app.route("/spotify-callback")
 def spotify_callback():
     session.clear()
     code = request.args.get("code")
     token_info = create_spotify_oauth().get_access_token(code)
     session["token_info"] = token_info
+    access_token = token_info["access_token"]
+    refresh_token = token_info["refresh_token"]
+    expires_in = token_info["expires_in"]
     frontend_url = "http://localhost:3000/callback"
-    return redirect(
-        f"{frontend_url}?access_token={token_info['access_token']}&refresh_token={token_info['refresh_token']}&expires_in={token_info['expires_in']}"
-    )
+    callback_uri = f"{frontend_url}?access_token={access_token}&refresh_token={refresh_token}&expires_in={expires_in}"
+    return redirect(callback_uri)
 
 
+# save discover weekly tracks to saved weekly playlist
 @app.route("/save-discover-weekly", methods=["POST"])
 def save_discover_weekly():
     access_token = request.json.get("access_token")
@@ -63,16 +72,27 @@ def save_discover_weekly():
         saved_weekly = sp.user_playlist_create(user_id, "Saved Weekly", True)
         saved_weekly_id = saved_weekly["id"]
 
-    discover_weekly_items = sp.playlist_items(discover_weekly_id)
-    song_uris = [item["track"]["uri"] for item in discover_weekly_items["items"]]
-    sp.user_playlist_add_tracks(user_id, saved_weekly_id, song_uris)
+    discover_weekly_items = sp.playlist_items(discover_weekly_id)["items"]
+    saved_weekly_items = sp.playlist_items(saved_weekly_id)["items"]
+    saved_weekly_uris = set(item["track"]["uri"] for item in saved_weekly_items)
+
+    tracks_to_add = []
+    for item in discover_weekly_items:
+        uri = item["track"]["uri"]
+        if uri not in saved_weekly_uris:
+            tracks_to_add.append(uri)
+
+    if tracks_to_add:
+        sp.user_playlist_add_tracks(user_id, saved_weekly_id, tracks_to_add)
 
     added_songs = [
         {
             "title": item["track"]["name"],
             "artist": item["track"]["artists"][0]["name"],
+            "album_artwork": item["track"]["album"]["images"][0]["url"],
+            "track_uri": item["track"]["uri"],
         }
-        for item in discover_weekly_items["items"]
+        for item in discover_weekly_items
     ]
 
     app.logger.debug(added_songs)
