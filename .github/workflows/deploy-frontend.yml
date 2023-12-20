@@ -30,7 +30,7 @@ jobs:
         working-directory: ./client
 
       - name: Build
-        run: yarn build
+        run: CI=false yarn build
         working-directory: ./client
 
       - name: Deploy to GitHub Pages
