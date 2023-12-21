@@ -34,7 +34,7 @@ def spotify_callback():
     access_token = token_info["access_token"]
     refresh_token = token_info["refresh_token"]
     expires_in = token_info["expires_in"]
-    frontend_url = "http://localhost:3000/callback"
+    frontend_url = "https://spotsaver.vercel.app/callback"
     callback_uri = f"{frontend_url}?access_token={access_token}&refresh_token={refresh_token}&expires_in={expires_in}"
     return redirect(callback_uri)
 
