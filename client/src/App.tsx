@@ -36,7 +36,7 @@ function App() {
       setIsLoading(true);
       axios
         .post(
-          `${process.env.REACT_APP_BACKEND_API}save-discover-weekly`,
+          `${process.env.REACT_APP_BACKEND_API}/save-discover-weekly`,
           {
             access_token: spotifyToken,
           },
