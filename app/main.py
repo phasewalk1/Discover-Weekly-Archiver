@@ -12,15 +12,7 @@ app = Flask(__name__)
 app.config["SESSION_COOKIE_NAME"] = "spotify-login-session"
 app.secret_key = secrets.token_urlsafe(16)
 # enable CORS
-CORS(
-    app,
-    resources={
-        r"/api/*": {
-            "origins": "https://spotsaver.vercel.app",
-            "methods": ["POST", "OPTIONS"],
-        }
-    },
-)
+CORS(app, supports_credentials=True)
 
 
 # login route: redirects to Spotify login page
@@ -50,6 +42,9 @@ def spotify_callback():
 # save discover weekly tracks to saved weekly playlist
 @app.route("/save-discover-weekly", methods=["POST"])
 def save_discover_weekly():
+    print("Request headers:", request.headers)
+    print("Reqeust origin:", request.origin)
+
     access_token = request.json.get("access_token")
     if not access_token:
         return jsonify({"error": "Access token is required"}), 400
