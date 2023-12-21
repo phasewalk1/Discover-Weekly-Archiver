@@ -34,9 +34,11 @@ function App() {
   const savePlaylist = () => {
     if (spotifyToken && !playlistSaved) {
       setIsLoading(true);
+      const url = `${process.env.REACT_APP_BACKEND_API}/save-discover-weekly`;
+      console.log("Posting to: ", url);
       axios
         .post(
-          `${process.env.REACT_APP_BACKEND_API}/save-discover-weekly`,
+          url,
           {
             access_token: spotifyToken,
           },
