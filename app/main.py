@@ -120,6 +120,3 @@ def token_from_session():
             sp_oauth = create_spotify_oauth()
             token_info = sp_oauth.refresh_access_token(token_info["refresh_token"])
         return token_info
-
-
-app.run(debug=True, port=8080)
