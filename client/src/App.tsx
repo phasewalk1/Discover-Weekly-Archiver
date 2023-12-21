@@ -27,7 +27,7 @@ function App() {
 
   const handleAuthRedirect = () => {
     setIsConnecting(true);
-    const authEndpoint = `${process.env.REACT_APP_BACKEND_API}/`;
+    const authEndpoint = `${process.env.REACT_APP_BACKEND_API}`;
     window.location.href = authEndpoint;
   };
 
