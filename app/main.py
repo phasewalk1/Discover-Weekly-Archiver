@@ -12,7 +12,8 @@ app = Flask(__name__)
 app.config["SESSION_COOKIE_NAME"] = "spotify-login-session"
 app.secret_key = secrets.token_urlsafe(16)
 # enable CORS
-CORS(app, supports_credentials=True)
+allowed_origins = ["https://spotsaver.vercel.app"]
+CORS(app, origins=allowed_origins, supports_credentials=True)
 
 
 # login route: redirects to Spotify login page
