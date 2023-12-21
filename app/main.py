@@ -104,6 +104,7 @@ def save_discover_weekly():
     ]
 
     app.logger.debug(added_songs)
+    print(added_songs)
 
     return jsonify({"added_songs": added_songs})
 
