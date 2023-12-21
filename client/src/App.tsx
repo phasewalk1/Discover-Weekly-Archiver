@@ -27,7 +27,7 @@ function App() {
 
   const handleAuthRedirect = () => {
     setIsConnecting(true);
-    const authEndpoint = `${process.env.BACKEND_API}/`;
+    const authEndpoint = `${process.env.REACT_APP_BACKEND_API}/`;
     window.location.href = authEndpoint;
   };
 
@@ -36,7 +36,7 @@ function App() {
       setIsLoading(true);
       axios
         .post(
-          `${process.env.BACKEND_API}/save-discover-weekly`,
+          `${process.env.REACT_APP_BACKEND_API}/save-discover-weekly`,
           {
             access_token: spotifyToken,
           },
