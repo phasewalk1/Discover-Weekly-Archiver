@@ -27,7 +27,7 @@ function App() {
 
   const handleAuthRedirect = () => {
     setIsConnecting(true);
-    const authEndpoint = "http://localhost:8080/";
+    const authEndpoint = `${process.env.BACKEND_API}/`;
     window.location.href = authEndpoint;
   };
 
@@ -36,7 +36,7 @@ function App() {
       setIsLoading(true);
       axios
         .post(
-          "http://localhost:8080/save-discover-weekly",
+          `${process.env.BACKEND_API}/save-discover-weekly`,
           {
             access_token: spotifyToken,
           },
